@@ -1,7 +1,7 @@
 # Barcelona Tapas Finder — OpenTelemetry Workshop
 
 > [!IMPORTANT]
-> You are on **[Exercise 02 — Setup OBI](exercises/02-setup-obi.md)**
+> You are on **[Exercise 03 — Processing telemetry](exercises/03-processing.md)**
 
 A demo application for learning OpenTelemetry instrumentation. It helps users discover tapas restaurants in Barcelona.
 
@@ -62,10 +62,7 @@ The workshop is divided into sections, each building on the previous one. Every 
 | --------------------------------------------------------------------------------------------------- | --------------------------------- |
 | [01 — Setup infrastructure metrics in OpenTelemetry Collector](exercises/01-setup-infra-metrics.md) | `01-setup-infra-metrics`          |
 | [02 — Setup eBPF instrumentation](exercises/02-setup-obi.md)                                        | `02-setup-obi`                    |
-| [03 — Instrumenting applications](exercises/03-instrumenting-applications.md)                       | `03-instrumenting-applications`   |
-| [04 — Customizing instrumentations](exercises/04-customizing-instrumentations.md)                   | `04-customizing-instrumentations` |
-| [05 — Processing telemetry](exercises/05-processing.md)                                             | `05-processing`                   |
-| [06 — Manual database instrumentation](exercises/06-manual-instrumentation.md)                      | `06-manual-instrumentation`       |
+| [03 — Processing telemetry](exercises/03-processing.md)                                             | `05-processing`                   |
 
 ## Running the Application
 
@@ -88,20 +85,34 @@ and forwards it to LGTM via OTLP HTTP and also scrapes infrastructure metrics:
 - **docker_stats**: Per-container resource metrics collected every 10s via the Docker socket
 - **resourcedetection** processor enriches every signal with host and env resource attributes
 
+The trace pipeline also post-processes spans before export:
+
+- **filter/drop_frontend_noise** drops frontend `/health` and static-asset server spans so they never count against the trace budget
+- **tail_sampling** keeps only errors and traces slower than 1s (10s decision window)
+- **transform/anonymize_enduser** replaces `enduser.id` with an 8-char SHA-256 prefix on surviving spans
+
 ### OBI — OTel eBPF Instrument
 
 [OBI](https://github.com/open-telemetry/opentelemetry-ebpf-instrumentation) automatically instruments processes using Linux eBPF — no code changes or language agents required. It runs as a privileged container with `pid: host` so it can observe all processes on the host.
 
 Configuration is in [obi/obi-config.yaml](obi/obi-config.yaml). It targets only the `backend` and `frontend` containers and exports metrics via OTLP to the collector every 5s.
 
+### In-Process Instrumentation
+
+Both services are instrumented with the OpenTelemetry SDK and export traces, metrics, and logs via OTLP HTTP to the collector.
+
+- **Frontend (Node.js)**: [zero-code auto-instrumentation](https://opentelemetry.io/docs/zero-code/js/) via `@opentelemetry/auto-instrumentations-node` loaded with `--require`. Logs are forwarded to the OTel SDK via `@opentelemetry/winston-transport`. The noisy `net` instrumentation is disabled via `OTEL_NODE_DISABLED_INSTRUMENTATIONS`, and `enduser.id`/`enduser.pseudo.id` are attached to the active span once the user is resolved.
+- **Backend (Go)**: Declarative SDK initialization via [otelconf](https://github.com/open-telemetry/opentelemetry-go-contrib/tree/main/otelconf) — [backend/otel-config.yaml](backend/otel-config.yaml) declares exporters, readers, and propagators; [backend/telemetry.go](backend/telemetry.go) embeds it and calls a single `otelconf.NewSDK(...)`. Logs are bridged from `slog`. `/api/health` is filtered out of traces via `otelmux.WithFilter`, and traces are head-sampled at 50% (`parentbased_traceidratio`).
+
 ### Grafana Dashboards
 
 Open Grafana at `http://localhost:3000` (no login required).
 
-| Dashboard       | URL                                   | Description                                                                                     |
-| --------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Host Metrics    | <http://localhost:3000/d/hostmetrics> | CPU, memory, disk, and network metrics for the host; CPU and memory per container               |
-| OBI RED Metrics | <http://localhost:3000/d/red-metrics> | Request rate, error rate, and latency (P95) for inbound and outbound HTTP/RPC calls per service |
+| Dashboard       | URL                                     | Description                                                                                     |
+| --------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Host Metrics    | <http://localhost:3000/d/hostmetrics>   | CPU, memory, disk, and network metrics for the host; CPU and memory per container               |
+| OBI RED Metrics | <http://localhost:3000/d/red-metrics>   | Request rate, error rate, and latency (P95) for inbound and outbound HTTP/RPC calls per service |
+| APM Dashboard   | <http://localhost:3000/d/apm-dashboard> | Traces, metrics, and logs from in-process OTel SDK instrumentation                              |
 
 ## Technical Details
 
