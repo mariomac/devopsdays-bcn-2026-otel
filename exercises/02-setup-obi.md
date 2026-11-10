@@ -25,9 +25,9 @@ In this exercise you add [OBI](https://github.com/open-telemetry/opentelemetry-e
 
 | File                                                                                                                                                                 | Changes                                                                                   |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| [docker-compose.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/02-setup-obi/docker-compose.yaml)                                 | Add the `obi` service                                                                     |
-| [obi/obi-config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/02-setup-obi/obi/obi-config.yaml)                                 | New OBI config — targets the app containers and exports metrics to the collector          |
-| [grafana/dashboards/red-metrics.json](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/02-setup-obi/grafana/dashboards/red-metrics.json) | Pre-provisioned RED metrics dashboard — request rate, error rate, and latency per service |
+| [docker-compose.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/02-setup-obi/docker-compose.yaml)                                 | Add the `obi` service                                                                     |
+| [obi/obi-config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/02-setup-obi/obi/obi-config.yaml)                                 | New OBI config — targets the app containers and exports metrics to the collector          |
+| [grafana/dashboards/red-metrics.json](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/02-setup-obi/grafana/dashboards/red-metrics.json) | Pre-provisioned RED metrics dashboard — request rate, error rate, and latency per service |
 
 ---
 
@@ -37,7 +37,7 @@ In this exercise you add [OBI](https://github.com/open-telemetry/opentelemetry-e
 
 OBI needs to run as a privileged container with `pid: host` so it can observe all processes on the host. It also needs access to the Docker socket to attach container metadata to metrics.
 
-In [docker-compose.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/02-setup-obi/docker-compose.yaml):
+In [docker-compose.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/02-setup-obi/docker-compose.yaml):
 
 ```diff
 # docker-compose.yaml
@@ -67,7 +67,7 @@ In [docker-compose.yaml](https://github.com/grafana/grafanacon2026-opentelemetry
 
 ### Step 2 — Create the OBI config
 
-Create [obi/obi-config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/02-setup-obi/obi/obi-config.yaml). The `discovery.instrument` list scopes OBI to only the app containers — without it OBI would instrument every process on the host, including the collector itself.
+Create [obi/obi-config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/02-setup-obi/obi/obi-config.yaml). The `discovery.instrument` list scopes OBI to only the app containers — without it OBI would instrument every process on the host, including the collector itself.
 
 ```yaml
 # obi/obi-config.yaml

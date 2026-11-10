@@ -24,10 +24,10 @@ Filter noisy spans in the collector, use an OTTL transform processor to anonymiz
 
 | File                                                                                                                                                | Changes                                                       |
 | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| [otel-collector/config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/otel-collector/config.yaml) | Drop static-file and `/health` spans from the frontend        |
-| [otel-collector/config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/otel-collector/config.yaml) | Replace `enduser.id` with a short irreversible hash           |
-| [otel-collector/config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/otel-collector/config.yaml) | Keep only error and slow traces via `tail_sampling`           |
-| [docker-compose.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/docker-compose.yaml)               | Remove the frontend's head sampler so the collector sees 100% |
+| [otel-collector/config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/otel-collector/config.yaml) | Drop static-file and `/health` spans from the frontend        |
+| [otel-collector/config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/otel-collector/config.yaml) | Replace `enduser.id` with a short irreversible hash           |
+| [otel-collector/config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/otel-collector/config.yaml) | Keep only error and slow traces via `tail_sampling`           |
+| [docker-compose.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/docker-compose.yaml)               | Remove the frontend's head sampler so the collector sees 100% |
 
 ---
 
@@ -40,7 +40,7 @@ Filter noisy spans in the collector, use an OTTL transform processor to anonymiz
 
 ### Step 1 — Add a filter processor
 
-In [otel-collector/config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/otel-collector/config.yaml):
+In [otel-collector/config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/otel-collector/config.yaml):
 
 ```diff
 # otel-collector/config.yaml
@@ -85,7 +85,7 @@ Replace `enduser.id` with the first 8 hex characters of its SHA-256 digest.
 
 ### Step 3 — Add a transform processor for traces
 
-In [otel-collector/config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/otel-collector/config.yaml):
+In [otel-collector/config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/otel-collector/config.yaml):
 
 ```diff
 # otel-collector/config.yaml
@@ -122,7 +122,7 @@ The [tail sampling processor](https://github.com/open-telemetry/opentelemetry-co
 
 ### Step 5 — Turn off head-based sampling
 
-In [docker-compose.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/docker-compose.yaml), remove the frontend's head sampler so every trace reaches the collector:
+In [docker-compose.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/docker-compose.yaml), remove the frontend's head sampler so every trace reaches the collector:
 
 ```diff
 # docker-compose.yaml
@@ -137,7 +137,7 @@ The SDK now falls back to the default `parentbased_always_on` — every root spa
 
 ### Step 6 — Add a tail-sampling processor
 
-In [otel-collector/config.yaml](https://github.com/grafana/grafanacon2026-opentelemetry-instrumentation/blob/05-processing/otel-collector/config.yaml):
+In [otel-collector/config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/blob/05-processing/otel-collector/config.yaml):
 
 ```diff
 # otel-collector/config.yaml
