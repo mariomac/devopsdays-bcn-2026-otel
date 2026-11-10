@@ -56,6 +56,7 @@ In [docker-compose.yaml](https://github.com/mariomac/devopsdays-bcn-2026-otel/bl
 +      # required if you want extra container metadata attributes
 +      - /var/run/docker.sock:/var/run/docker.sock:ro
 +      - ./obi/obi-config.yaml:/etc/obi/config.yaml:ro
++      - /sys/fs/bpf:/sys/fs/bpf:rw
 +    environment:
 +      OTEL_EBPF_CONFIG_PATH: /etc/obi/config.yaml
 +    depends_on:
@@ -72,6 +73,10 @@ Create [obi/obi-config.yaml](https://github.com/mariomac/devopsdays-bcn-2026-ote
 ```yaml
 # obi/obi-config.yaml
 otel_metrics_export:
+  protocol: http/protobuf
+  endpoint: http://otel-collector:4318
+  interval: 5s
+otel_traces_export:
   protocol: http/protobuf
   endpoint: http://otel-collector:4318
   interval: 5s
