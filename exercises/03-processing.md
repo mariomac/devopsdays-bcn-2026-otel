@@ -1,6 +1,6 @@
 # Exercise 05 — Processing telemetry
 
-[← Exercise 04](04-customizing-instrumentations.md) | [Exercise 06 →](06-manual-instrumentation.md)
+[← Exercise 02](02-setup-obi.md)
 
 Filter noisy spans in the collector, use an OTTL transform processor to anonymize sensitive span attributes, and swap head-based sampling for tail-based sampling that keeps every error and every slow trace.
 
@@ -237,9 +237,9 @@ Check out the [metrics drilldown](http://localhost:3000/a/grafana-metricsdrilldo
 ## Catch up
 
 ```bash
-git checkout origin/05-processing
+git checkout origin/03-processing
 ```
 
 ---
 
-[← Exercise 04](04-customizing-instrumentations.md) | [Exercise 06 →](06-manual-instrumentation.md)
+[← Exercise 02](02-setup-obi.md)

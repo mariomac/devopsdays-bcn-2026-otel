@@ -1,6 +1,6 @@
 # Exercise 02 — Setup OBI (OTel eBPF Instrumentation)
 
-[← Exercise 01](01-setup-infra-metrics.md) | [Exercise 03 →](03-instrumenting-applications.md)
+[← Exercise 01](01-setup-infra-metrics.md) | [Exercise 03 →](03-processing.md)
 
 In this exercise you add [OBI](https://github.com/open-telemetry/opentelemetry-ebpf-instrumentation) — the OpenTelemetry eBPF Instrument — to the stack. OBI automatically captures HTTP and RPC metrics for any process on the host using Linux eBPF, with no code changes or language agents required.
 
@@ -123,4 +123,4 @@ git checkout origin/02-setup-obi
 
 ---
 
-[← Exercise 01](01-setup-infra-metrics.md) | [Exercise 03 →](03-instrumenting-applications.md)
+[← Exercise 01](01-setup-infra-metrics.md) | [Exercise 03 →](03-processing.md)
